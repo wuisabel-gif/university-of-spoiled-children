@@ -38,7 +38,7 @@ Or just open `index.html` in any modern browser. No install, no build step. Work
 | Run | hold `Shift` |
 | Look around | click + drag |
 | Learn a strategy | walk up to a signboard |
-| Talk to a student | walk up to them |
+| Talk to a classmate | walk up + press `E` (or `Space`) |
 
 ## ✨ Features
 

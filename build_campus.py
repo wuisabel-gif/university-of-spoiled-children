@@ -144,6 +144,17 @@ HTML=r'''<!DOCTYPE html>
   .talk-name{font-weight:800;font-size:14px;color:var(--gold);margin-bottom:4px;display:flex;align-items:center;gap:7px}
   .talk-name::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 8px var(--gold)}
   .talk-line{margin:0 0 12px;font-weight:600;font-size:14.5px;line-height:1.5;color:#e7edf7}
+  /* "press E to talk" interaction hint */
+  #prompt{position:fixed;left:50%;bottom:120px;z-index:19;display:flex;align-items:center;gap:9px;
+    padding:9px 15px 9px 11px;border-radius:13px;background:var(--panel);border:2px solid var(--edge);
+    color:var(--ink);box-shadow:var(--shadow),inset 0 1px 0 var(--hair);font-weight:700;font-size:13.5px;
+    white-space:nowrap;pointer-events:none;visibility:hidden;opacity:0;
+    transform:translateX(-50%) translateY(8px);transition:opacity .18s ease,transform .18s var(--ease)}
+  #prompt.show{visibility:visible;opacity:1;transform:translateX(-50%) translateY(0)}
+  #prompt kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 6px;font-family:inherit;
+    background:var(--panel2);border:1px solid var(--edge);border-bottom:3px solid var(--edge-dark);
+    border-radius:7px;font-weight:800;font-size:12px;color:#9fc2ff}
+  #prompt b{color:var(--gold);font-weight:800}
   /* learned toast */
   #toast{position:fixed;top:18px;left:50%;transform:translate(-50%,-150%);z-index:30;
     display:flex;align-items:center;gap:11px;padding:11px 16px 11px 12px;border-radius:15px;
@@ -231,6 +242,8 @@ HTML=r'''<!DOCTYPE html>
     </div>
   </div>
 </div>
+
+<div id="prompt"><kbd>E</kbd><span>Talk to <b id="prompt-name">Tommy</b></span></div>
 
 <div id="grad">
   <div id="confetti"></div>
@@ -365,8 +378,11 @@ AFRAME.registerComponent('pixel-world',{
     document.getElementById('talk-next').textContent=(idx>=cur.lines.length-1)?'Bye 👋':'Next ▸'; }
   window.openTalk=function(npc){ if(cur===npc && box.classList.contains('show'))return; if(window.closeCard) window.closeCard(); cur=npc; idx=0; render(); box.classList.add('show'); };
   window.closeTalk=function(){ box.classList.remove('show'); cur=null; };
+  window.isTalking=function(){ return !!cur && box.classList.contains('show'); };
+  function adv(){ if(!cur)return; if(idx>=cur.lines.length-1){ window.closeTalk(); } else { idx++; render(); } }
+  window.talkAdvance=adv;
   var nb=document.getElementById('talk-next');
-  if(nb) nb.onclick=function(){ if(!cur)return; if(idx>=cur.lines.length-1){ window.closeTalk(); } else { idx++; render(); } };
+  if(nb) nb.onclick=adv;
 })();
 
 AFRAME.registerComponent('campus',{
@@ -675,7 +691,9 @@ AFRAME.registerComponent('campus',{
 AFRAME.registerComponent('thirdperson',{
   init:function(){
     var self=this;
-    this.keys={}; this.yaw=0; this.pitch=-9; this.phase=0; this.amp=0; this.active=-1; this.lastStep=0; this.activeNpc=-1;
+    this.keys={}; this.yaw=0; this.pitch=-9; this.phase=0; this.amp=0; this.active=-1; this.lastStep=0;
+    this.nearNpc=-1; this.talkingNpc=-1; this.eWas=false;
+    this.promptEl=document.getElementById('prompt'); this.promptNameEl=document.getElementById('prompt-name'); this.promptName=undefined;
     var q=function(s){return self.el.querySelector(s).object3D;};
     this.legL=q('.legL'); this.legR=q('.legR'); this.armL=q('.armL'); this.armR=q('.armR');
     this.avatar=q('#avatar'); this.cam=q('#cam');
@@ -696,6 +714,10 @@ AFRAME.registerComponent('thirdperson',{
       window.addEventListener('touchend',end);
     });
   },
+  endTalk:function(){ var NP=window.NPCS||[]; if(this.talkingNpc>=0 && NP[this.talkingNpc]) NP[this.talkingNpc].el.__talking=false; this.talkingNpc=-1; if(window.closeTalk) window.closeTalk(); },
+  showPrompt:function(name){ var el=this.promptEl; if(!el)return;
+    if(name){ if(this.promptName!==name){ this.promptName=name; if(this.promptNameEl) this.promptNameEl.textContent=name; } el.classList.add('show'); }
+    else { this.promptName=null; el.classList.remove('show'); } },
   tick:function(t,dt){
     dt=Math.min(dt,50)/1000;
     var k=this.keys, d2r=THREE.MathUtils.degToRad;
@@ -715,7 +737,8 @@ AFRAME.registerComponent('thirdperson',{
       var p=this.el.object3D.position, C=window.COLLIDERS||[], PR=0.42;
       var blocked=function(x,z){ for(var i=0;i<C.length;i++){ var o=C[i];
         if(o.t==='r'){ if(Math.abs(x-o.x)<o.hw+PR && Math.abs(z-o.z)<o.hd+PR) return true; }
-        else { var ddx=x-o.x, ddz=z-o.z, rr=o.r+PR; if(ddx*ddx+ddz*ddz<rr*rr) return true; } } return false; };
+        else { var ddx=x-o.x, ddz=z-o.z, rr=o.r+PR; if(ddx*ddx+ddz*ddz<rr*rr) return true; } }
+        var NPc=window.NPCS||[]; for(var ic=0;ic<NPc.length;ic++){ var ep=NPc[ic].el.object3D.position, cx=x-ep.x, cz=z-ep.z, cr=0.5+PR; if(cx*cx+cz*cz<cr*cr) return true; } return false; };
       var nx=p.x+v.x*sp*dt, nz=p.z+v.z*sp*dt;
       if(!blocked(nx,p.z)) p.x=nx;
       if(!blocked(p.x,nz)) p.z=nz;
@@ -724,27 +747,46 @@ AFRAME.registerComponent('thirdperson',{
       var cur=this.avatar.rotation.y, df=Math.atan2(Math.sin(want-cur),Math.cos(want-cur));
       this.avatar.rotation.y=cur+df*Math.min(1,dt*12);
     }
-    // walk up to a sign -> expand it + teach the lesson
-    var pos=this.el.object3D.position, SG=window.SIGNS||[];
-    var near=-1, best=2.8*2.8;
-    for(var i=0;i<SG.length;i++){ var ddx=pos.x-SG[i].x, ddz=pos.z-SG[i].z, dd=ddx*ddx+ddz*ddz; if(dd<best){best=dd;near=i;} }
-    if(near!==this.active){
-      if(this.active>=0 && SG[this.active]) SG[this.active].panel.setAttribute('animation__f','property: scale; to: 1 1 1; dur: 260; easing: easeOutQuad');
-      this.active=near;
-      if(near>=0){
-        SG[near].panel.setAttribute('animation__f','property: scale; to: 1.55 1.55 1.55; dur: 320; easing: easeOutBack');
-        window.openCard(SG[near].s);
-        if(window.markLearned) window.markLearned(near);
-      } else if(window.closeCard){ window.closeCard(); }
-    }
-    // walk up to a student -> they stop and chat
-    var NP=window.NPCS||[], nn=-1, nbest=3.0*3.0;
+    var pos=this.el.object3D.position, SG=window.SIGNS||[], NP=window.NPCS||[];
+    var talking=!!(window.isTalking && window.isTalking());
+    // interact key (E / Space), edge-detected so one press = one action
+    var ek=!!(this.keys['KeyE']||this.keys['Space']); var ePressed=ek&&!this.eWas; this.eWas=ek;
+    // nearest classmate within reach
+    var nn=-1, nbest=2.6*2.6;
     for(var jn=0;jn<NP.length;jn++){ var ex=NP[jn].el.object3D.position, ax=pos.x-ex.x, az=pos.z-ex.z, ad=ax*ax+az*az; if(ad<nbest){nbest=ad;nn=jn;} }
-    if(nn!==this.activeNpc){
-      if(this.activeNpc>=0 && NP[this.activeNpc]) NP[this.activeNpc].el.__talking=false;
-      this.activeNpc=nn;
-      if(nn>=0){ NP[nn].el.__talking=true; if(window.closeCard) window.closeCard(); if(window.openTalk) window.openTalk(NP[nn]); }
-      else if(window.closeTalk){ window.closeTalk(); }
+    this.nearNpc=nn;
+
+    if(talking){
+      // end the chat if you walk away from the person you're talking to
+      var tn=this.talkingNpc;
+      if(tn>=0 && NP[tn]){ var tp=NP[tn].el.object3D.position, wx=pos.x-tp.x, wz=pos.z-tp.z; if(wx*wx+wz*wz>4.5*4.5) this.endTalk(); }
+      if(ePressed){ if(window.talkAdvance) window.talkAdvance(); if(!(window.isTalking && window.isTalking())) this.endTalk(); }
+      this.showPrompt(null);
+    } else {
+      // walk up to a sign -> expand it + teach the lesson (only when not chatting)
+      var near=-1, best=2.8*2.8;
+      for(var i=0;i<SG.length;i++){ var ddx=pos.x-SG[i].x, ddz=pos.z-SG[i].z, dd=ddx*ddx+ddz*ddz; if(dd<best){best=dd;near=i;} }
+      if(near!==this.active){
+        if(this.active>=0 && SG[this.active]) SG[this.active].panel.setAttribute('animation__f','property: scale; to: 1 1 1; dur: 260; easing: easeOutQuad');
+        this.active=near;
+        if(near>=0){
+          SG[near].panel.setAttribute('animation__f','property: scale; to: 1.55 1.55 1.55; dur: 320; easing: easeOutBack');
+          window.openCard(SG[near].s);
+          if(window.markLearned) window.markLearned(near);
+        } else if(window.closeCard){ window.closeCard(); }
+      }
+      // classmate in reach -> show "Press E", open chat on press
+      if(nn>=0){
+        this.showPrompt(NP[nn].name);
+        if(ePressed){
+          if(this.active>=0 && SG[this.active]) SG[this.active].panel.setAttribute('animation__f','property: scale; to: 1 1 1; dur: 200; easing: easeOutQuad');
+          this.active=-1;
+          this.talkingNpc=nn; NP[nn].el.__talking=true;
+          if(window.closeCard) window.closeCard();
+          if(window.openTalk) window.openTalk(NP[nn]);
+          this.showPrompt(null);
+        }
+      } else { this.showPrompt(null); }
     }
     var target=moving?(run?0.9:0.58):0;
     this.amp+=(target-this.amp)*Math.min(1,dt*9);
