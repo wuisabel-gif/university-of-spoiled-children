@@ -6,6 +6,21 @@ It's based on **Cal Newport's _How to Win at College_** — every signboard you 
 
 > ⚠️ **Work in progress.** This is an early prototype. Expect rough edges (see the [Roadmap](ROADMAP.md)).
 
+## 💡 Why build a book this way?
+
+I didn't want to make another summary of _How to Win at College_. Those are everywhere, and they slide right off your brain. The whole book is about _doing_ college — showing up, walking to office hours, putting a sign on your wall — so reading the advice as a flat bullet list always felt backwards to me.
+
+So I turned it into a place. Each strategy lives on a signboard somewhere on the quad, and the only way to learn it is to physically walk up to it. You can't skim the whole thing in thirty seconds — you have to wander, get a little lost, and stumble onto the next idea. That tiny bit of effort, the walk itself, is the point. It makes a piece of advice feel like something you _found_ instead of something you were told, and that's the thing that actually sticks.
+
+Making it a walkable USC parody is just what made it fun to build. Palm trees, a clock tower, Tommy Trojan talking nonsense, a Metro train rolling past — the satire keeps it light while the real study tips do their quiet work in the background. A book becomes a world you walk through, and "finishing" it means you graduate.
+
+### How it works
+
+- Walk up to a signboard → it opens into a card and ticks up your progress (Freshman → Senior).
+- Collect all 16 strategies → you **graduate**, confetti and all.
+- Talk to the NPCs for the jokes; read the boards for the substance.
+- The entire world is **one `index.html`** — [A-Frame](https://aframe.io/) handles the 3D, and the pixel-art textures and buildings are generated in Python and baked into the file as data URIs. Nothing to install, nothing fetched from a server. Open the file and you're on campus.
+
 ## ▶️ Play it
 
 Live demo: **https://wuisabel-gif.github.io/cube/**
