@@ -4,7 +4,9 @@ A walkable, Roblox-style 3D college campus you explore right in your browser —
 
 It's based on **Cal Newport's _How to Win at College_** — every signboard you reach teaches one of its strategies in your own words.
 
-> ⚠️ **Work in progress.** This is an early prototype. Expect rough edges (see the [Roadmap](ROADMAP.md)).
+![University of Spoiled Children — walking the quad toward the archway](screenshots/cover.jpg)
+
+> ⚠️ **Work in progress, built in public.** This is an early prototype that grows a little every day — see the [Progress log](#-progress-log) below for what's new.
 
 ## 💡 Why build a book this way?
 
@@ -53,9 +55,25 @@ Or just open `index.html` in any modern browser. No install, no build step. Work
 
 ## 🖼️ Screenshots
 
-_Add your own to `screenshots/` and link them here:_
+| The quad | Dougheny Library | Inside the library |
+| --- | --- | --- |
+| ![The quad and archway](screenshots/cover.jpg) | ![Dougheny Library + champagne fountain](screenshots/library.jpg) | ![The reading room](screenshots/interior.jpg) |
 
-![Gameplay](screenshots/gameplay-1.png)
+## 📈 Progress log
+
+Built in public — a bit every day. Newest first.
+
+### 2026-06-22
+- 📖 The golden book in the library is now **collectible** — walk up, press `E`, and a "Secret Found!" reward pops.
+- Added these screenshots + this progress log.
+
+### 2026-06-21
+- 🏛️ Made the **Dougheny Library enterable** — walk through the door into a lit reading room (bookshelf stacks, study tables with green banker lamps, a checkout desk) with a hidden golden book inside.
+- 🗺️ Extended the campus: a grand **library landmark** (USC Doheny-inspired), a **champagne fountain** plaza, scattered litter, and hidden text easter eggs.
+- 🧑‍🎓 Upgraded the **main character** (expressive face, brown hair, red backpack, lanyard) and gave **every classmate a face**; scaled classmates to match the player.
+- 🎮 Reworked the **classmate interaction**: press `E` to talk (with a floating hint) + **solid collision** so you can't walk through people.
+- 🖥️ New UI: **NPC dialogue portraits**, category **icons**, a **minimap / radar**, "lesson learned" toast, and a 🎓 favicon.
+- 🏗️ Initial release: a walkable 3D quad, 16 strategy boards, talkable NPCs, a clock tower, statues, and a moving Metro train, with a redesigned game UI.
 
 ## 🛠️ Tech
 
