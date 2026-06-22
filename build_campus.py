@@ -956,7 +956,7 @@ AFRAME.registerComponent('thirdperson',{
       var blocked=function(x,z){ for(var i=0;i<C.length;i++){ var o=C[i];
         if(o.t==='r'){ if(Math.abs(x-o.x)<o.hw+PR && Math.abs(z-o.z)<o.hd+PR) return true; }
         else { var ddx=x-o.x, ddz=z-o.z, rr=o.r+PR; if(ddx*ddx+ddz*ddz<rr*rr) return true; } }
-        var NPc=window.NPCS||[]; for(var ic=0;ic<NPc.length;ic++){ var ep=NPc[ic].el.object3D.position, cx=x-ep.x, cz=z-ep.z, cr=0.6+PR; if(cx*cx+cz*cz<cr*cr) return true; } return false; };
+        var NPc=window.NPCS||[]; for(var ic=0;ic<NPc.length;ic++){ if(NPc[ic].el.__talking) continue; var ep=NPc[ic].el.object3D.position, cx=x-ep.x, cz=z-ep.z, cr=0.6+PR; if(cx*cx+cz*cz<cr*cr) return true; } return false; };
       var nx=p.x+v.x*sp*dt, nz=p.z+v.z*sp*dt;
       if(!blocked(nx,p.z)) p.x=nx;
       if(!blocked(p.x,nz)) p.z=nz;
