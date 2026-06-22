@@ -133,6 +133,9 @@ HTML=r'''<!DOCTYPE html>
   .grad-box h2{margin:10px 0 4px;font-weight:800;font-size:27px;letter-spacing:-.01em}
   .grad-box p{margin:0 0 18px;color:var(--mut);font-weight:600;font-size:14px}
   .grad-box .btn{width:100%;background:linear-gradient(180deg,#ffe07a,var(--gold));color:#3a2a05;border-bottom-color:var(--gold-d)}
+  #secret{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;
+    background:radial-gradient(120% 90% at 50% 28%,rgba(72,58,22,.5),rgba(8,10,20,.84));backdrop-filter:blur(5px)}
+  #secret.show{display:flex}
   /* talk */
   #talk{position:fixed;left:0;right:0;bottom:0;z-index:21;display:none;justify-content:center;pointer-events:none;padding:0 14px 18px}
   #talk.show{display:flex;animation:slideup .3s var(--pop)}
@@ -260,7 +263,16 @@ HTML=r'''<!DOCTYPE html>
   </div>
 </div>
 
-<div id="prompt"><kbd>E</kbd><span>Talk to <b id="prompt-name">Tommy</b></span></div>
+<div id="prompt"><kbd>E</kbd><span id="prompt-label">Talk to <b>Tommy</b></span></div>
+
+<div id="secret">
+  <div class="grad-box">
+    <div class="cap">📖</div>
+    <h2>Secret Found!</h2>
+    <p>You found the <b>Golden Book of All-Nighters</b>.<br>"The real treasure was the all-nighters."</p>
+    <button class="btn next" id="secret-close">Nice ✨</button>
+  </div>
+</div>
 
 <div id="grad">
   <div id="confetti"></div>
@@ -338,6 +350,11 @@ function graduate(){
     c.appendChild(d); }
 }
 (function(){var gc=document.getElementById('grad-close'); if(gc) gc.onclick=function(){document.getElementById('grad').classList.remove('show');document.getElementById('confetti').innerHTML='';};})();
+window.collectSecret=function(){ var bk=window.SECRET; if(!bk||bk.taken)return; bk.taken=true;
+  var el=document.getElementById('secretbook'); if(el) el.setAttribute('visible','false');
+  if(window.SFX){ window.SFX.resume(); window.SFX.chime(); }
+  var m=document.getElementById('secret'); if(m) m.classList.add('show'); };
+(function(){var sx=document.getElementById('secret-close'); if(sx) sx.onclick=function(){document.getElementById('secret').classList.remove('show');};})();
 (function(){var sb=document.getElementById('snd'); if(!sb)return; sb.onclick=function(){ if(!window.SFX)return; window.SFX.resume(); var m=!window.SFX.isMuted(); window.SFX.setMuted(m); sb.textContent=m?'🔇':'🔊'; };})();
 (function(){var h=document.getElementById('hud'),b=document.getElementById('hud-min'); if(!h||!b)return;
   b.onclick=function(){ h.classList.toggle('min'); h.dataset.user='1'; };
@@ -820,12 +837,15 @@ AFRAME.registerComponent('campus',{
     // checkout desk near the entrance
     lh+='<a-box position="-5 0.55 3.4" width="3.2" height="1.1" depth="0.9" material="color:#5a3a22; roughness:1" shadow="cast: true"></a-box>';
     lh+='<a-box position="-5 1.12 3.4" width="3.4" height="0.1" depth="1.1" material="color:#6b4a2e"></a-box>';
-    // interior easter egg: a glowing golden book on a pedestal
+    // interior easter egg: a glowing golden book on a pedestal (collectible)
     lh+='<a-box position="5 0.7 -2" width="0.7" height="1.4" depth="0.7" material="color:#cabf9e; roughness:1" shadow="cast: true"></a-box>';
-    lh+='<a-box position="5 1.5 -2" rotation="-18 0 0" width="0.62" height="0.1" depth="0.86" material="color:#caa02e; emissive:#8a6512; emissiveIntensity:0.35; metalness:0.5; roughness:0.3" shadow="cast: true"></a-box>';
-    lh+='<a-sphere position="5 1.62 -2" radius="0.5" material="shader: flat; color:#ffe9a0; transparent: true; opacity: 0.16; side: double"></a-sphere>';
-    lh+='<a-text value="the real treasure was the all-nighters" position="5 2.2 -2" align="center" width="3.0" color="#7a6a3a"></a-text>';
+    lh+='<a-entity id="secretbook">'+
+        '<a-box position="5 1.5 -2" rotation="-18 0 0" width="0.62" height="0.1" depth="0.86" material="color:#caa02e; emissive:#8a6512; emissiveIntensity:0.35; metalness:0.5; roughness:0.3" shadow="cast: true"></a-box>'+
+        '<a-sphere position="5 1.62 -2" radius="0.5" material="shader: flat; color:#ffe9a0; transparent: true; opacity: 0.16; side: double"></a-sphere>'+
+        '<a-text value="the real treasure was the all-nighters" position="5 2.2 -2" align="center" width="3.0" color="#7a6a3a"></a-text>'+
+      '</a-entity>';
     lib.innerHTML=lh; root.appendChild(lib);
+    window.SECRET={x:5,z:-132,taken:false};
 
     // ===== little hidden litter scattered on the lawns =====
     function litterPiece(){ var t=Math.floor(Math.random()*6);
@@ -873,7 +893,7 @@ AFRAME.registerComponent('thirdperson',{
     var self=this;
     this.keys={}; this.yaw=0; this.pitch=-9; this.phase=0; this.amp=0; this.active=-1; this.lastStep=0;
     this.nearNpc=-1; this.talkingNpc=-1; this.eWas=false;
-    this.promptEl=document.getElementById('prompt'); this.promptNameEl=document.getElementById('prompt-name'); this.promptName=undefined;
+    this.promptEl=document.getElementById('prompt'); this.promptLabelEl=document.getElementById('prompt-label'); this.promptLabel=undefined;
     var q=function(s){return self.el.querySelector(s).object3D;};
     this.legL=q('.legL'); this.legR=q('.legR'); this.armL=q('.armL'); this.armR=q('.armR');
     this.avatar=q('#avatar'); this.cam=q('#cam');
@@ -895,9 +915,9 @@ AFRAME.registerComponent('thirdperson',{
     });
   },
   endTalk:function(){ var NP=window.NPCS||[]; if(this.talkingNpc>=0 && NP[this.talkingNpc]) NP[this.talkingNpc].el.__talking=false; this.talkingNpc=-1; if(window.closeTalk) window.closeTalk(); },
-  showPrompt:function(name){ var el=this.promptEl; if(!el)return;
-    if(name){ if(this.promptName!==name){ this.promptName=name; if(this.promptNameEl) this.promptNameEl.textContent=name; } el.classList.add('show'); }
-    else { this.promptName=null; el.classList.remove('show'); } },
+  showPrompt:function(label){ var el=this.promptEl; if(!el)return;
+    if(label){ if(this.promptLabel!==label){ this.promptLabel=label; if(this.promptLabelEl) this.promptLabelEl.innerHTML=label; } el.classList.add('show'); }
+    else { this.promptLabel=null; el.classList.remove('show'); } },
   tick:function(t,dt){
     dt=Math.min(dt,50)/1000;
     var k=this.keys, d2r=THREE.MathUtils.degToRad;
@@ -955,9 +975,15 @@ AFRAME.registerComponent('thirdperson',{
           if(window.markLearned) window.markLearned(near);
         } else if(window.closeCard){ window.closeCard(); }
       }
-      // classmate in reach -> show "Press E", open chat on press
-      if(nn>=0){
-        this.showPrompt(NP[nn].name);
+      // secret golden book takes priority when you're right next to it
+      var bk=window.SECRET, nearBook=false;
+      if(bk && !bk.taken){ var bkx=pos.x-bk.x, bkz=pos.z-bk.z; if(bkx*bkx+bkz*bkz < 2.5*2.5) nearBook=true; }
+      if(nearBook){
+        this.showPrompt('Take the <b>Golden Book</b>');
+        if(ePressed && window.collectSecret) window.collectSecret();
+      } else if(nn>=0){
+        // classmate in reach -> show "Press E", open chat on press
+        this.showPrompt('Talk to <b>'+NP[nn].name+'</b>');
         if(ePressed){
           if(this.active>=0 && SG[this.active]) SG[this.active].panel.setAttribute('animation__f','property: scale; to: 1 1 1; dur: 200; easing: easeOutQuad');
           this.active=-1;
