@@ -64,6 +64,7 @@ Or just open `index.html` in any modern browser. No install, no build step. Work
 Built in public — a bit every day. Newest first.
 
 ### 2026-06-22
+- ⭐ Added a **score system**: a points counter in the HUD with floating "+pts" toasts. Learning a lesson is **+100**, chatting with a classmate is **+25** (faculty — professors, the dean, the coach — are worth **+40**), finding the golden book is **+500**, and graduating is a **+1000** bonus.
 - 📖 The golden book in the library is now **collectible** — walk up, press `E`, and a "Secret Found!" reward pops.
 - Added these screenshots + this progress log.
 

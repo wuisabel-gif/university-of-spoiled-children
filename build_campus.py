@@ -118,6 +118,13 @@ HTML=r'''<!DOCTYPE html>
     background:linear-gradient(90deg,transparent 20%,rgba(255,255,255,.4),transparent 80%);
     background-size:220% 100%;animation:shine 2.4s linear infinite}
   @keyframes shine{0%{background-position:120% 0}100%{background-position:-120% 0}}
+  /* score chip */
+  .hud-score{display:flex;align-items:center;justify-content:space-between;gap:8px;
+    background:var(--panel2);border:1px solid var(--edge);border-bottom:3px solid var(--edge-dark);
+    border-radius:10px;padding:6px 11px;font-weight:700;font-size:11.5px;color:var(--mut)}
+  .hud-score b{font-size:16px;color:var(--gold);font-weight:800;font-variant-numeric:tabular-nums}
+  .hud-score b.pulse{animation:scorepulse .42s ease-out}
+  @keyframes scorepulse{0%{transform:scale(1)}38%{transform:scale(1.5);color:#fff}100%{transform:scale(1)}}
   /* graduation */
   #grad{position:fixed;inset:0;z-index:40;display:none;align-items:center;justify-content:center;
     background:radial-gradient(120% 90% at 50% 28%,rgba(46,34,78,.55),rgba(8,10,20,.84));backdrop-filter:blur(5px);overflow:hidden}
@@ -205,6 +212,7 @@ HTML=r'''<!DOCTYPE html>
     <button class="hud-min" id="hud-min" title="collapse panel" aria-label="collapse panel">▾</button>
   </div>
   <div class="hud-body">
+    <div class="hud-score"><span>⭐ Score</span><b id="score">0</b></div>
     <div class="prog">
       <div class="prog-top">
         <span class="prog-year" id="prog-year">Freshman Year</span>
@@ -223,8 +231,8 @@ HTML=r'''<!DOCTYPE html>
 </div>
 
 <div id="toast">
-  <div class="t-ic">✓</div>
-  <div>Lesson learned!<small id="toast-sub">1 / 16 found</small></div>
+  <div class="t-ic" id="toast-ic">⭐</div>
+  <div><span id="toast-main">Lesson learned!</span><small id="toast-sub">1 / 16 found</small></div>
 </div>
 
 <div id="map" title="Gold = lesson boards (filled once learned) · blue = classmates · arrow = you"><canvas id="mapcv"></canvas></div>
@@ -325,7 +333,7 @@ window.markLearned=function(i){
   if(window.SFX) window.SFX.chime();
   var n=0,tot=SG.length,k; for(k=0;k<tot;k++) if(SG[k].done) n++;
   updateProgress(n,tot);
-  if(n<tot) showToast(n,tot);
+  window.addScore(100,'Lesson learned!', n+' / '+tot+' found');
   if(n>=tot) graduate();
 };
 function updateProgress(n,tot){
@@ -335,14 +343,23 @@ function updateProgress(n,tot){
     yr.textContent = f>=1?'🎓 Graduate' : f>=0.75?'Senior Year' : f>=0.5?'Junior Year' : f>=0.25?'Sophomore Year' : 'Freshman Year'; }
 }
 var _toastT;
-function showToast(n,tot){
+window.flashToast=function(ic, main, sub){
   var t=document.getElementById('toast'); if(!t)return;
-  var s=document.getElementById('toast-sub'); if(s) s.textContent=n+' / '+tot+' found';
+  var i=document.getElementById('toast-ic'); if(i) i.textContent=ic;
+  var m=document.getElementById('toast-main'); if(m) m.textContent=main;
+  var s=document.getElementById('toast-sub'); if(s) s.textContent=sub||'';
   t.classList.add('show'); clearTimeout(_toastT);
   _toastT=setTimeout(function(){ t.classList.remove('show'); },2400);
-}
+};
+window.SCORE=0;
+window.addScore=function(pts, label, sub){
+  window.SCORE+=pts;
+  var e=document.getElementById('score'); if(e){ e.textContent=window.SCORE; e.classList.remove('pulse'); void e.offsetWidth; e.classList.add('pulse'); }
+  window.flashToast('⭐','+'+pts+'  ·  '+label, sub||'');
+};
 function graduate(){
   var gr=document.getElementById('grad'); if(!gr||gr.dataset.done)return; gr.dataset.done='1'; gr.classList.add('show');
+  if(window.addScore) window.addScore(1000,'Graduated! 🎓','');
   var c=document.getElementById('confetti'),cols=['#ffd54a','#3aa856','#e25b6a','#5a8fe6','#c08be0','#ff9f43'],i;
   for(i=0;i<150;i++){ var d=document.createElement('i');
     d.style.cssText='position:absolute;top:-20px;left:'+(Math.random()*100)+'vw;width:9px;height:14px;background:'+cols[i%6]+
@@ -353,6 +370,7 @@ function graduate(){
 window.collectSecret=function(){ var bk=window.SECRET; if(!bk||bk.taken)return; bk.taken=true;
   var el=document.getElementById('secretbook'); if(el) el.setAttribute('visible','false');
   if(window.SFX){ window.SFX.resume(); window.SFX.chime(); }
+  if(window.addScore) window.addScore(500,'Golden Book! 📖','');
   var m=document.getElementById('secret'); if(m) m.classList.add('show'); };
 (function(){var sx=document.getElementById('secret-close'); if(sx) sx.onclick=function(){document.getElementById('secret').classList.remove('show');};})();
 (function(){var sb=document.getElementById('snd'); if(!sb)return; sb.onclick=function(){ if(!window.SFX)return; window.SFX.resume(); var m=!window.SFX.isMuted(); window.SFX.setMuted(m); sb.textContent=m?'🔇':'🔊'; };})();
@@ -594,7 +612,7 @@ AFRAME.registerComponent('campus',{
       per.setAttribute('position', lane.toFixed(2)+' 0 '+nz0.toFixed(2));
       per.setAttribute('npc','z0: '+nz0.toFixed(1)+'; z1: '+nz1.toFixed(1)+'; speed: '+(1.1+Math.random()*1.4).toFixed(2)+'; dir: '+(Math.random()<0.5?-1:1));
       per.setAttribute('scale','1.25 1.25 1.25'); per.__talking=false; root.appendChild(per);
-      window.NPCS.push({el:per, name:npcChat[ni][0], lines:npcChat[ni][1], portrait:'asset/portraits/npc_'+ni+'.png'});
+      window.NPCS.push({el:per, name:npcChat[ni][0], lines:npcChat[ni][1], portrait:'asset/portraits/npc_'+ni+'.png', pts:([1,2,5].indexOf(ni)>=0?40:25), talked:false});
     }
 
     for(var ci=0; ci<7; ci++){
@@ -988,6 +1006,7 @@ AFRAME.registerComponent('thirdperson',{
           if(this.active>=0 && SG[this.active]) SG[this.active].panel.setAttribute('animation__f','property: scale; to: 1 1 1; dur: 200; easing: easeOutQuad');
           this.active=-1;
           this.talkingNpc=nn; NP[nn].el.__talking=true;
+          if(!NP[nn].talked){ NP[nn].talked=true; if(window.addScore) window.addScore(NP[nn].pts||25, 'Chatted with '+NP[nn].name, ''); }
           if(window.closeCard) window.closeCard();
           if(window.openTalk) window.openTalk(NP[nn]);
           this.showPrompt(null);
