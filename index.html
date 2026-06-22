@@ -738,30 +738,88 @@ AFRAME.registerComponent('campus',{
       '<a-text value="CHAMPAGNE FOUNTAIN" position="0 0.42 2.04" align="center" width="3.7" color="#7a1f24"></a-text>';
     root.appendChild(fnt);
 
-    // ===== grand library terminus (USC Doheny-inspired Romanesque hall + campanile) =====
+    // ===== grand library terminus — ENTERABLE (Doheny-inspired hall + campanile) =====
     var lib=document.createElement('a-entity'); lib.setAttribute('position','0 0 -130');
-    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'r',x:0,z:-130,hw:9.4,hd:5});
-    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'r',x:-6.5,z:-128,hw:2.4,hd:2.4});
+    // hollow shell: wall colliders with a door gap at front-center
+    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'r',x:0,z:-134.5,hw:9,hd:0.4});       // back wall
+    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'r',x:-9,z:-130,hw:0.4,hd:4.7});       // left wall
+    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'r',x:9,z:-130,hw:0.4,hd:4.7});        // right wall
+    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'r',x:-5.35,z:-125.5,hw:3.65,hd:0.4}); // front-left of door
+    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'r',x:5.35,z:-125.5,hw:3.65,hd:0.4});  // front-right of door
+    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'r',x:-11.5,z:-126.5,hw:2.2,hd:2.2});  // corner tower
+    // interior furniture colliders
+    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'r',x:-3.5,z:-129,hw:1.3,hd:0.7});
+    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'r',x:3.5,z:-129,hw:1.3,hd:0.7});
+    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'r',x:0,z:-131,hw:1.3,hd:0.7});
+    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'r',x:-5,z:-126.6,hw:1.7,hd:0.6});
+    (window.COLLIDERS=window.COLLIDERS||[]).push({t:'c',x:5,z:-132,r:0.55});
     var lh='';
-    lh+='<a-box position="0 0.5 0" width="18.6" height="1.0" depth="9.3" material="color:#cabf9e; roughness:1" shadow="cast: true; receive: true"></a-box>';
-    lh+='<a-box position="0 5 0" width="18" height="9" depth="9" material="src:#tex-facade1; repeat:5 3; roughness:1" shadow="cast: true; receive: true"></a-box>';
-    lh+='<a-box position="0 9.8 0" width="18.7" height="0.7" depth="9.7" material="color:#b5482f; roughness:1" shadow="cast: true"></a-box>';
-    lh+='<a-box position="0 3.4 4.5" width="4.8" height="6.6" depth="0.6" material="color:#e7ddc0; roughness:1" shadow="cast: true"></a-box>';
-    lh+='<a-box position="0 2.8 4.85" width="2.8" height="4.8" depth="0.3" material="shader: flat; color:#2a2620"></a-box>';
-    lh+='<a-circle position="0 7.3 4.86" radius="1.0" material="shader: flat; color:#f3ecd6"></a-circle>';
-    lh+='<a-ring position="0 7.3 4.87" radius-inner="0.86" radius-outer="1.06" material="shader: flat; color:#7a1f24"></a-ring>';
-    lh+='<a-box position="0 7.3 4.88" width="0.1" height="2.0" depth="0.02" material="shader: flat; color:#7a1f24"></a-box>';
-    lh+='<a-box position="0 7.3 4.88" width="2.0" height="0.1" depth="0.02" material="shader: flat; color:#7a1f24"></a-box>';
-    [-6.6,-3.7,3.7,6.6].forEach(function(wx){ lh+='<a-box position="'+wx+' 4.6 4.62" width="1.1" height="3.2" depth="0.1" material="shader: flat; color:#39506e"></a-box>'+'<a-box position="'+wx+' 6.35 4.62" width="1.1" height="0.12" depth="0.1" material="shader: flat; color:#c9b27a"></a-box>'; });
-    lh+='<a-box position="-6.5 9 2" width="4.4" height="18" depth="4.4" material="src:#tex-facade1; repeat:1 5; roughness:1" shadow="cast: true; receive: true"></a-box>';
-    lh+='<a-box position="-6.5 18.3 2" width="4.9" height="0.7" depth="4.9" material="color:#c9b27a; roughness:1" shadow="cast: true"></a-box>';
-    lh+='<a-box position="-6.5 16.6 4.21" width="1.0" height="2.2" depth="0.1" material="shader: flat; color:#241f1a"></a-box>';
-    lh+='<a-box position="-6.5 16.6 -0.21" width="1.0" height="2.2" depth="0.1" material="shader: flat; color:#241f1a"></a-box>';
-    lh+='<a-box position="-8.71 16.6 2" width="0.1" height="2.2" depth="1.0" material="shader: flat; color:#241f1a"></a-box>';
-    lh+='<a-box position="-4.29 16.6 2" width="0.1" height="2.2" depth="1.0" material="shader: flat; color:#241f1a"></a-box>';
-    lh+='<a-cone position="-6.5 20.5 2" radius-bottom="3.7" radius-top="0" height="4.0" material="color:#b5482f; roughness:1" shadow="cast: true"></a-cone>';
-    lh+='<a-sphere position="-6.5 22.8 2" radius="0.3" material="shader: flat; color:#ffcc33"></a-sphere>';
-    lh+='<a-text value="DOUGHENY LIBRARY" position="2.4 1.5 4.9" align="center" width="7.5" color="#5a4a2a"></a-text>';
+    // floor + ceiling + roof cap
+    lh+='<a-box position="0 0.03 0" width="17.4" height="0.06" depth="8.6" material="color:#6b4a2e; roughness:1" shadow="receive: true"></a-box>';
+    lh+='<a-box position="0 9.05 0" width="18" height="0.4" depth="9" material="color:#cabf9e; roughness:1" shadow="cast: true"></a-box>';
+    lh+='<a-box position="0 9.55 0" width="18.8" height="0.7" depth="9.8" material="color:#b5482f; roughness:1" shadow="cast: true"></a-box>';
+    // hollow brick walls with a door gap at front-center
+    lh+='<a-box position="-5.35 4.5 4.5" width="7.3" height="9" depth="0.5" material="src:#tex-facade1; repeat:2 3; roughness:1" shadow="cast: true; receive: true"></a-box>';
+    lh+='<a-box position="5.35 4.5 4.5" width="7.3" height="9" depth="0.5" material="src:#tex-facade1; repeat:2 3; roughness:1" shadow="cast: true; receive: true"></a-box>';
+    lh+='<a-box position="0 6.8 4.5" width="3.4" height="4.4" depth="0.5" material="src:#tex-facade1; repeat:1 1; roughness:1" shadow="cast: true"></a-box>';
+    lh+='<a-box position="0 4.5 -4.5" width="18" height="9" depth="0.5" material="src:#tex-facade1; repeat:5 3; roughness:1" shadow="cast: true; receive: true"></a-box>';
+    lh+='<a-box position="-9 4.5 0" width="0.5" height="9" depth="9" material="src:#tex-facade1; repeat:3 3; roughness:1" shadow="cast: true; receive: true"></a-box>';
+    lh+='<a-box position="9 4.5 0" width="0.5" height="9" depth="9" material="src:#tex-facade1; repeat:3 3; roughness:1" shadow="cast: true; receive: true"></a-box>';
+    // stone door portal trim
+    lh+='<a-box position="-1.95 2.35 4.62" width="0.4" height="4.7" depth="0.5" material="color:#e7ddc0; roughness:1"></a-box>';
+    lh+='<a-box position="1.95 2.35 4.62" width="0.4" height="4.7" depth="0.5" material="color:#e7ddc0; roughness:1"></a-box>';
+    lh+='<a-box position="0 4.75 4.62" width="4.3" height="0.45" depth="0.5" material="color:#e7ddc0; roughness:1"></a-box>';
+    // rose window + name above the door
+    lh+='<a-circle position="0 6.95 4.78" radius="0.9" material="shader: flat; color:#f3ecd6"></a-circle>';
+    lh+='<a-ring position="0 6.95 4.79" radius-inner="0.78" radius-outer="0.96" material="shader: flat; color:#7a1f24"></a-ring>';
+    lh+='<a-box position="0 6.95 4.8" width="0.09" height="1.8" depth="0.02" material="shader: flat; color:#7a1f24"></a-box>';
+    lh+='<a-box position="0 6.95 4.8" width="1.8" height="0.09" depth="0.02" material="shader: flat; color:#7a1f24"></a-box>';
+    lh+='<a-text value="DOUGHENY LIBRARY" position="0 5.2 4.79" align="center" width="6.2" color="#5a4a2a"></a-text>';
+    // exterior arched windows on the front segments
+    [-6.2,-3.4,3.4,6.2].forEach(function(wx){ lh+='<a-box position="'+wx+' 4.7 4.76" width="1.1" height="3.2" depth="0.06" material="shader: flat; color:#39506e"></a-box>'+'<a-box position="'+wx+' 6.45 4.76" width="1.1" height="0.12" depth="0.06" material="shader: flat; color:#c9b27a"></a-box>'; });
+    // interior side windows
+    [-2.6,0,2.6].forEach(function(zz){ lh+='<a-box position="-8.72 4.6 '+zz+'" width="0.08" height="3.6" depth="1.3" material="shader: flat; color:#bcd6ee"></a-box>'+'<a-box position="8.72 4.6 '+zz+'" width="0.08" height="3.6" depth="1.3" material="shader: flat; color:#bcd6ee"></a-box>'; });
+    // warm reading-room light
+    lh+='<a-light type="point" position="0 7.4 0" intensity="0.55" distance="24" color="#ffe6bf"></a-light>';
+    // corner campanile tower (moved out of the interior)
+    lh+='<a-entity position="-11.5 0 3.5">'+
+        '<a-box position="0 9 0" width="4.4" height="18" depth="4.4" material="src:#tex-facade1; repeat:1 5; roughness:1" shadow="cast: true; receive: true"></a-box>'+
+        '<a-box position="0 18.3 0" width="4.9" height="0.7" depth="4.9" material="color:#c9b27a; roughness:1" shadow="cast: true"></a-box>'+
+        '<a-box position="0 16.6 2.21" width="1.0" height="2.2" depth="0.1" material="shader: flat; color:#241f1a"></a-box>'+
+        '<a-box position="0 16.6 -2.21" width="1.0" height="2.2" depth="0.1" material="shader: flat; color:#241f1a"></a-box>'+
+        '<a-box position="2.21 16.6 0" width="0.1" height="2.2" depth="1.0" material="shader: flat; color:#241f1a"></a-box>'+
+        '<a-box position="-2.21 16.6 0" width="0.1" height="2.2" depth="1.0" material="shader: flat; color:#241f1a"></a-box>'+
+        '<a-cone position="0 20.5 0" radius-bottom="3.7" radius-top="0" height="4.0" material="color:#b5482f; roughness:1" shadow="cast: true"></a-cone>'+
+        '<a-sphere position="0 22.8 0" radius="0.3" material="shader: flat; color:#ffcc33"></a-sphere>'+
+      '</a-entity>';
+    // ---- interior: bookshelf stacks ----
+    function shelfHTML(){ var h='<a-box position="0 1.55 0" width="2.2" height="3.1" depth="0.5" material="color:#5a3a22; roughness:1" shadow="cast: true"></a-box>';
+      for(var sy=0.55; sy<3.0; sy+=0.72){ h+='<a-box position="0 '+sy.toFixed(2)+' 0.16" width="2.0" height="0.06" depth="0.42" material="color:#6b4a2e"></a-box>';
+        for(var bx=-0.9; bx<0.92; bx+=0.2){ var bc=['#7a1f24','#2f5e8c','#3a6e3e','#caa02e','#7a4ca0','#b5482f','#cfc6b0'][Math.floor(Math.random()*7)];
+          h+='<a-box position="'+bx.toFixed(2)+' '+(sy+0.27).toFixed(2)+' 0.16" width="0.13" height="'+(0.4+Math.random()*0.12).toFixed(2)+'" depth="0.34" material="color:'+bc+'; roughness:1"></a-box>'; } }
+      return h; }
+    [-6,-3,0,3,6].forEach(function(sx){ lh+='<a-entity position="'+sx+' 0 -4.0">'+shelfHTML()+'</a-entity>'; });
+    lh+='<a-entity position="-7.6 0 -1.5" rotation="0 90 0">'+shelfHTML()+'</a-entity>';
+    lh+='<a-entity position="7.6 0 -1.5" rotation="0 -90 0">'+shelfHTML()+'</a-entity>';
+    // ---- interior: study tables with green banker lamps ----
+    function tableHTML(){ return '<a-box position="0 1.0 0" width="2.4" height="0.12" depth="1.2" material="color:#6b4a2e; roughness:1" shadow="cast: true"></a-box>'+
+      '<a-box position="-1.0 0.5 -0.45" width="0.12" height="1.0" depth="0.12" material="color:#4a3018"></a-box>'+
+      '<a-box position="1.0 0.5 -0.45" width="0.12" height="1.0" depth="0.12" material="color:#4a3018"></a-box>'+
+      '<a-box position="-1.0 0.5 0.45" width="0.12" height="1.0" depth="0.12" material="color:#4a3018"></a-box>'+
+      '<a-box position="1.0 0.5 0.45" width="0.12" height="1.0" depth="0.12" material="color:#4a3018"></a-box>'+
+      '<a-box position="0.7 1.17 0" width="0.18" height="0.14" depth="0.18" material="color:#2a2a2a"></a-box>'+
+      '<a-cylinder position="0.7 1.32 0" radius="0.02" height="0.2" material="color:#caa02e"></a-cylinder>'+
+      '<a-sphere position="0.7 1.45 0" radius="0.14" scale="1 0.62 1" material="shader: flat; color:#2f7d5b; emissive:#2f7d5b; emissiveIntensity:0.45"></a-sphere>'+
+      '<a-sphere position="0.7 1.4 0" radius="0.08" material="shader: flat; color:#fff6cf"></a-sphere>'; }
+    [[-3.5,1.0],[3.5,1.0],[0,-1.0]].forEach(function(tp){ lh+='<a-entity position="'+tp[0]+' 0 '+tp[1]+'">'+tableHTML()+'</a-entity>'; });
+    // checkout desk near the entrance
+    lh+='<a-box position="-5 0.55 3.4" width="3.2" height="1.1" depth="0.9" material="color:#5a3a22; roughness:1" shadow="cast: true"></a-box>';
+    lh+='<a-box position="-5 1.12 3.4" width="3.4" height="0.1" depth="1.1" material="color:#6b4a2e"></a-box>';
+    // interior easter egg: a glowing golden book on a pedestal
+    lh+='<a-box position="5 0.7 -2" width="0.7" height="1.4" depth="0.7" material="color:#cabf9e; roughness:1" shadow="cast: true"></a-box>';
+    lh+='<a-box position="5 1.5 -2" rotation="-18 0 0" width="0.62" height="0.1" depth="0.86" material="color:#caa02e; emissive:#8a6512; emissiveIntensity:0.35; metalness:0.5; roughness:0.3" shadow="cast: true"></a-box>';
+    lh+='<a-sphere position="5 1.62 -2" radius="0.5" material="shader: flat; color:#ffe9a0; transparent: true; opacity: 0.16; side: double"></a-sphere>';
+    lh+='<a-text value="the real treasure was the all-nighters" position="5 2.2 -2" align="center" width="3.0" color="#7a6a3a"></a-text>';
     lib.innerHTML=lh; root.appendChild(lib);
 
     // ===== little hidden litter scattered on the lawns =====
@@ -859,7 +917,7 @@ AFRAME.registerComponent('thirdperson',{
       var nx=p.x+v.x*sp*dt, nz=p.z+v.z*sp*dt;
       if(!blocked(nx,p.z)) p.x=nx;
       if(!blocked(p.x,nz)) p.z=nz;
-      p.x=Math.max(-10.5,Math.min(10.5,p.x)); p.z=Math.max(-132,Math.min(13,p.z));
+      p.x=Math.max(-10.5,Math.min(10.5,p.x)); p.z=Math.max(-137,Math.min(13,p.z));
       var want=Math.atan2(-v.x,-v.z)-d2r(this.yaw);
       var cur=this.avatar.rotation.y, df=Math.atan2(Math.sin(want-cur),Math.cos(want-cur));
       this.avatar.rotation.y=cur+df*Math.min(1,dt*12);
