@@ -4,7 +4,7 @@ A walkable, Roblox-style 3D college campus you explore right in your browser —
 
 It's based on **Cal Newport's _How to Win at College_** — every signboard you reach teaches one of its strategies in your own words.
 
-![University of Spoiled Children — walking the quad toward the archway](screenshots/cover.jpg)
+![University of Spoiled Children — gameplay](screenshots/demo.gif)
 
 > ⚠️ **Work in progress, built in public.** This is an early prototype that grows a little every day — see the [Progress log](#-progress-log) below for what's new.
 

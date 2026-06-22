@@ -19,3 +19,5 @@ build/__pycache__/
 *.mov
 *.mp4
 *.webm
+# ...but allow the small compressed demo gif used in the README
+!screenshots/demo.gif
