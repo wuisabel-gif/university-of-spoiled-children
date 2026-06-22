@@ -473,6 +473,12 @@ AFRAME.registerComponent('campus',{
         '<a-box position="0 '+(h+0.7)+' 0" width="'+(w+0.5)+'" height="0.5" depth="'+(d+0.5)+'" material="color:'+roof+'; roughness:1" shadow="cast: true"></a-box>';
       root.appendChild(e);
     }
+    // true if (x,z) is clear of existing colliders (buildings, trees, signs, props)
+    function clearSpot(x,z,pad){ var C=window.COLLIDERS||[],i,o; pad=(pad==null?0.7:pad);
+      for(i=0;i<C.length;i++){ o=C[i];
+        if(o.t==='r'){ if(Math.abs(x-o.x)<o.hw+pad && Math.abs(z-o.z)<o.hd+pad) return false; }
+        else { var dx=x-o.x, dz=z-o.z, rr=o.r+pad; if(dx*dx+dz*dz<rr*rr) return false; } }
+      return true; }
     var BR='#b5482f';
     building(-11.8,-12,9,9,10,'#tex-facade1',BR);  building(-12.2,-27,9,11,10,'#tex-facade1',BR);
     building(-12.4,-42,10,10,11,'#tex-facade1',BR); building(-12.1,-58,9,12,10,'#tex-facade1',BR);
@@ -506,7 +512,8 @@ AFRAME.registerComponent('campus',{
 
     // scattered bushes on the lawn
     for(var bi=0; bi<26; bi++){
-      var bx=(Math.random()<0.5?-1:1)*(4.5+Math.random()*4.5), bz=4-Math.random()*96;
+      var bx,bz,bok=false; for(var bt=0;bt<12&&!bok;bt++){ bx=(Math.random()<0.5?-1:1)*(4.5+Math.random()*4.5); bz=4-Math.random()*96; bok=clearSpot(bx,bz,0.7); }
+      if(!bok) continue;
       var bu=document.createElement('a-entity'); bu.setAttribute('position', bx.toFixed(2)+' 0 '+bz.toFixed(2));
       var bc=['#3f6e36','#4a7a3e','#386632'][Math.floor(Math.random()*3)];
       bu.innerHTML='<a-sphere radius="'+(0.5+Math.random()*0.35).toFixed(2)+'" position="0 0.35 0" material="color:'+bc+'; roughness:1" shadow="cast: true"></a-sphere>';
@@ -645,7 +652,8 @@ AFRAME.registerComponent('campus',{
 
     // cardinal & gold flower beds to fill the lawn
     for(var fb=0; fb<42; fb++){
-      var fx=(Math.random()<0.5?-1:1)*(4.6+Math.random()*5.2), fz=4-Math.random()*96;
+      var fx,fz,fok=false; for(var ft=0;ft<12&&!fok;ft++){ fx=(Math.random()<0.5?-1:1)*(4.6+Math.random()*5.2); fz=4-Math.random()*96; fok=clearSpot(fx,fz,0.8); }
+      if(!fok) continue;
       var fe=document.createElement('a-entity'); fe.setAttribute('position', fx.toFixed(2)+' 0 '+fz.toFixed(2));
       var fh='<a-box position="0 0.12 0" width="0.95" height="0.24" depth="0.62" material="color:#3a5e30; roughness:1" shadow="cast: true"></a-box>';
       var fc=['#8a0f1a','#ffcc33','#f2efe6','#c0182a','#ffcc33'];
@@ -869,7 +877,8 @@ AFRAME.registerComponent('campus',{
       if(t===4) return '<a-box width="0.34" height="0.07" depth="0.24" position="0 0.04 0" rotation="0 '+(Math.random()*90).toFixed(0)+' 0" material="color:'+['#3a5e8c','#7a1f24','#2f7d5b'][Math.floor(Math.random()*3)]+'; roughness:1"></a-box>';
       return '<a-cylinder radius="0.06" height="0.34" position="0 0.06 0" rotation="0 0 78" material="color:#2f4a32; roughness:0.5"></a-cylinder><a-cylinder radius="0.045" height="0.08" position="0.17 0.12 0" rotation="0 0 78" material="color:#e9c64a"></a-cylinder>'; }
     for(var li=0; li<32; li++){
-      var lx2=(Math.random()<0.5?-1:1)*(4.8+Math.random()*9.6), lz2=4-Math.random()*122;
+      var lx2,lz2,lok=false; for(var lt=0;lt<12&&!lok;lt++){ lx2=(Math.random()<0.5?-1:1)*(4.8+Math.random()*9.6); lz2=4-Math.random()*122; lok=clearSpot(lx2,lz2,0.6); }
+      if(!lok) continue;
       var le=document.createElement('a-entity'); le.setAttribute('position', lx2.toFixed(2)+' 0 '+lz2.toFixed(2));
       le.setAttribute('rotation','0 '+(Math.random()*360).toFixed(0)+' 0'); le.innerHTML=litterPiece(); root.appendChild(le);
     }

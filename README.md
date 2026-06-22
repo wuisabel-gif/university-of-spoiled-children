@@ -28,7 +28,9 @@ Making it a walkable USC parody is just what made it fun to build. Palm trees, a
 Live demo: **https://wuisabel-gif.github.io/cube/**
 _(enable GitHub Pages: Settings → Pages → Source: `main` / root)_
 
-📺 **Play log / walkthrough:** https://www.youtube.com/watch?v=b8ictMvaxNo
+📺 **Devlogs:**
+- [Devlog 1 — walkthrough](https://www.youtube.com/watch?v=b8ictMvaxNo)
+- [Devlog 2 — scoring + the hidden collectible](https://youtu.be/m8fQC5L1Y3s)
 
 Or just open `index.html` in any modern browser. No install, no build step. Works in VR too.
 
@@ -64,6 +66,8 @@ Or just open `index.html` in any modern browser. No install, no build step. Work
 Built in public — a bit every day. Newest first.
 
 ### 2026-06-22
+- 📺 **[Devlog 2](https://youtu.be/m8fQC5L1Y3s)** is up — covering the scoring system and the hidden collectible.
+- 🌷 Fixed decorations (flower beds, litter, bushes) **clipping into buildings** — they now spawn only on clear ground.
 - ⭐ Added a **score system**: a points counter in the HUD with floating "+pts" toasts. Learning a lesson is **+100**, chatting with a classmate is **+25** (faculty — professors, the dean, the coach — are worth **+40**), finding the golden book is **+500**, and graduating is a **+1000** bonus.
 - 📖 The golden book in the library is now **collectible** — walk up, press `E`, and a "Secret Found!" reward pops.
 - Added these screenshots + this progress log.

@@ -13,3 +13,9 @@ build/__pycache__/
 
 # Local Claude Code tooling
 .claude/
+
+# Screen recordings / large media (keep local, do not commit)
+*.gif
+*.mov
+*.mp4
+*.webm
